@@ -4,7 +4,7 @@ import (
 	"net/textproto"
 	"time"
 
-	"github.com/jordwest/imap-server/types"
+	"ro-imap-server.go/types"
 )
 
 // Mailstore is an interface to be implemented to provide mail storage

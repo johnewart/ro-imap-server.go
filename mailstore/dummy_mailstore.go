@@ -6,8 +6,8 @@ import (
 	"net/textproto"
 	"time"
 
-	"github.com/jordwest/imap-server/types"
-	"github.com/jordwest/imap-server/util"
+	"ro-imap-server.go/types"
+	"ro-imap-server.go/util"
 )
 
 // DummyMailstore is an in-memory mail storage for testing purposes and to

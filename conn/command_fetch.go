@@ -7,9 +7,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jordwest/imap-server/mailstore"
-	"github.com/jordwest/imap-server/types"
-	"github.com/jordwest/imap-server/util"
+	"ro-imap-server.go/mailstore"
+	"ro-imap-server.go/types"
+	"ro-imap-server.go/util"
 )
 
 const (
