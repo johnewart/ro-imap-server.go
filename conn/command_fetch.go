@@ -43,6 +43,7 @@ func init() {
 		"\\[HEADER\\.FIELDS \\(([A-z\\s-]+)\\)\\]", fetchHeaderSpecificFields)
 	registerFetchParam("BODY(?:\\.PEEK)?\\[TEXT\\]", fetchBody)
 	registerFetchParam("BODY(?:\\.PEEK)?\\[\\]", fetchFullText)
+	registerFetchParam("RFC822\\.HEADER", fetch822Headers)
 }
 
 func cmdFetch(args commandArgs, c *Conn) {
@@ -176,6 +177,13 @@ func fetchHeaders(args []string, c *Conn, m mailstore.Message, peekOnly bool) st
 	}
 
 	return fmt.Sprintf("BODY%s[HEADER] {%d}\r\n%s", peekStr, hdrLen, hdr)
+}
+
+func fetch822Headers(args []string, c *Conn, m mailstore.Message, peekOnly bool) string {
+	hdr := fmt.Sprintf("%s\r\n", util.MIMEHeaderToString(m.Header()))
+	hdrLen := len(hdr)
+
+	return fmt.Sprintf("RFC822.HEADER {%d}\r\n%s", hdrLen, hdr)
 }
 
 func fetchHeaderSpecificFields(args []string, c *Conn, m mailstore.Message, peekOnly bool) string {
