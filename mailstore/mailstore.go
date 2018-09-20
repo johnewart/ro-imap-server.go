@@ -1,7 +1,8 @@
 package mailstore
 
 import (
-	"net/textproto"
+	"net/mail"
+  "strings"
 	"time"
 
 	"ro-imap-server.go/types"
@@ -18,7 +19,7 @@ type Mailstore interface {
 type User interface {
 	// Return a list of mailboxes belonging to this user
 	Mailboxes() []Mailbox
-
+  // Returns a named mailbox
 	MailboxByName(name string) (Mailbox, error)
 }
 
@@ -71,7 +72,7 @@ type Mailbox interface {
 type Message interface {
 	// Return the message's MIME headers as a map in format
 	// key: value
-	Header() textproto.MIMEHeader
+	Header() mail.Header
 
 	// Return the unique id of the email
 	UID() uint32
@@ -105,11 +106,31 @@ type Message interface {
 	RemoveFlags(types.Flags) Message
 
 	// Overwrite the message headers
-	SetHeaders(textproto.MIMEHeader) Message
+	SetHeaders(mail.Header) Message
 
 	// Overwrite the message body
 	SetBody(string) Message
 
 	// Save any changes to the message
 	Save() (Message, error)
+}
+
+//~ func HeaderToString(m Message) string {
+  //~ i := 0
+  //~ var ss []string
+  //~ for key, value := range m.Header() {
+    //~ ss[i] = key + ": " + strings.Join(value, ", ")
+    //~ i++
+  //~ }
+  //~ return strings.Join(ss, "\r\n")
+//~ }
+
+func HeaderToString(h mail.Header) string {
+  i := 0
+  var ss []string
+  for key, value := range h {
+    ss[i] = key + ": " + strings.Join(value, ", ")
+    i++
+  }
+  return strings.Join(ss, "\r\n")
 }

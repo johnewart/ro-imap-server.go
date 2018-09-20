@@ -3,7 +3,7 @@ package mailstore
 import (
 	"errors"
 	"fmt"
-	"net/textproto"
+	"net/mail"
 	"time"
 
 	"ro-imap-server.go/types"
@@ -313,7 +313,7 @@ func (m *DummyMailbox) NewMessage() Message {
 	return &DummyMessage{
 		sequenceNumber: 0,
 		uid:            0,
-		header:         make(textproto.MIMEHeader),
+		header:         make(mail.Header),
 		internalDate:   time.Now(),
 		flags:          types.Flags(0),
 		mailstore:      m.mailstore,
@@ -326,12 +326,12 @@ func (m *DummyMailbox) addEmail(from string, to string, subject string, date tim
 	uid := m.nextuid
 	m.nextuid++
 
-	hdr := make(textproto.MIMEHeader)
-	hdr.Set("Date", date.Format(util.RFC822Date))
-	hdr.Set("To", to)
-	hdr.Set("From", from)
-	hdr.Set("Subject", subject)
-	hdr.Set("Message-ID", fmt.Sprintf("<%d@test.com>", uid))
+	hdr := make(mail.Header)
+	hdr["Date"] = []string{date.Format(util.RFC822Date)}
+	hdr["To"] = []string{to}
+	hdr["From"] = []string{from}
+	hdr["Subject"] = []string{subject}
+	hdr["Message-ID"] = []string{fmt.Sprintf("<%d@test.com>", uid)}
 
 	newMessage := &DummyMessage{
 		sequenceNumber: uint32(len(m.messages) + 1),
@@ -351,7 +351,7 @@ func (m *DummyMailbox) addEmail(from string, to string, subject string, date tim
 type DummyMessage struct {
 	sequenceNumber uint32
 	uid            uint32
-	header         textproto.MIMEHeader
+	header         mail.Header
 	internalDate   time.Time
 	flags          types.Flags
 	mailboxID      uint32
@@ -360,7 +360,7 @@ type DummyMessage struct {
 }
 
 // Header returns the message's MIME Header.
-func (m *DummyMessage) Header() (hdr textproto.MIMEHeader) {
+func (m *DummyMessage) Header() (hdr mail.Header) {
 	return m.header
 }
 
@@ -418,7 +418,7 @@ func (m *DummyMessage) RemoveFlags(newFlags types.Flags) Message {
 }
 
 // SetHeaders sets the e-mail headers of the message.
-func (m *DummyMessage) SetHeaders(newHeader textproto.MIMEHeader) Message {
+func (m *DummyMessage) SetHeaders(newHeader mail.Header) Message {
 	m.header = newHeader
 	return m
 }

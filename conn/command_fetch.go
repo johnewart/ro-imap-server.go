@@ -3,7 +3,7 @@ package conn
 import (
 	"errors"
 	"fmt"
-	"net/textproto"
+  "net/mail"
 	"regexp"
 	"strings"
 
@@ -168,7 +168,7 @@ func fetchInternalDate(args []string, c *Conn, m mailstore.Message, peekOnly boo
 }
 
 func fetchHeaders(args []string, c *Conn, m mailstore.Message, peekOnly bool) string {
-	hdr := fmt.Sprintf("%s\r\n", util.MIMEHeaderToString(m.Header()))
+	hdr := fmt.Sprintf("%s\r\n", mailstore.HeaderToString(m.Header()))
 	hdrLen := len(hdr)
 
 	peekStr := ""
@@ -180,7 +180,7 @@ func fetchHeaders(args []string, c *Conn, m mailstore.Message, peekOnly bool) st
 }
 
 func fetch822Headers(args []string, c *Conn, m mailstore.Message, peekOnly bool) string {
-	hdr := fmt.Sprintf("%s\r\n", util.MIMEHeaderToString(m.Header()))
+	hdr := fmt.Sprintf("%s\r\n", mailstore.HeaderToString(m.Header()))
 	hdrLen := len(hdr)
 
 	return fmt.Sprintf("RFC822.HEADER {%d}\r\n%s", hdrLen, hdr)
@@ -192,17 +192,17 @@ func fetchHeaderSpecificFields(args []string, c *Conn, m mailstore.Message, peek
 	}
 	fields := strings.Split(args[1], " ")
 	hdrs := m.Header()
-	requestedHeaders := make(textproto.MIMEHeader)
+	requestedHeaders := make(mail.Header)
 	replyFieldList := make([]string, len(fields))
 	for i, key := range fields {
 		replyFieldList[i] = "\"" + key + "\""
 		// If the key exists in the headers, copy it over
-		v := hdrs.Get(key)
-		if v != "" {
-			requestedHeaders.Add(key, v)
+		v, ok := hdrs[key]
+		if ok {
+			requestedHeaders[key] = v
 		}
 	}
-	hdr := util.MIMEHeaderToString(requestedHeaders)
+	hdr := mailstore.HeaderToString(requestedHeaders)
 	hdrLen := len(hdr)
 
 	return fmt.Sprintf("BODY[HEADER.FIELDS (%s)] {%d}\r\n%s",
@@ -221,7 +221,7 @@ func fetchBody(args []string, c *Conn, m mailstore.Message, peekOnly bool) strin
 }
 
 func fetchFullText(args []string, c *Conn, m mailstore.Message, peekOnly bool) string {
-	mail := fmt.Sprintf("%s\r\n%s\r\n", util.MIMEHeaderToString(m.Header()), m.Body())
+	mail := fmt.Sprintf("%s\r\n%s\r\n", mailstore.HeaderToString(m.Header()), m.Body())
 	mailLen := len(mail)
 
 	return fmt.Sprintf("BODY[] {%d}\r\n%s",
