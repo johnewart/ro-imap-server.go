@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	store := mailstore.NewFilesystemMailstore(".")
+	store := mailstore.NewFilesystemMailstore(os.Args[1])
 	s := imap.NewServer(store)
 	s.Transcript = os.Stdout
 	s.Addr = ":10143"
