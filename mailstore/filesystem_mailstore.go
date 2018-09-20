@@ -3,134 +3,145 @@ package mailstore
 import (
 	"errors"
 	"fmt"
-  "io/ioutil"
-  "net/mail"
-  "os"
+	"io/ioutil"
+	"net/mail"
+	"os"
+	"path/filepath"
 	"time"
-  "path/filepath"
 
 	"ro-imap-server.go/types"
 )
 
-
 // FilesystemMailstore is a filesystem mail storage
 // It points to a dir in a filesystem
 type FilesystemMailstore struct {
-  dirname   string
-  info      *os.FileInfo
-  users     []*FilesystemUser
+	dirname   string
+	info      *os.FileInfo
+	users     []*FilesystemUser
 	mailboxes []*FilesystemMailbox
 }
 
 // FilesystemUser is a representation of a user
 type FilesystemUser struct {
-  username      string
-  password      string
+	username      string
+	password      string
 	authenticated bool
-  mailstore     *FilesystemMailstore
+	mailstore     *FilesystemMailstore
 }
 
 // FilesystemMailbox is a filesystem implementation of a Mailstore Mailbox
 // It points to a subdir of the Mailstore
 type FilesystemMailbox struct {
-  path       string
-  subdirname string
-  info       *os.FileInfo
-  ID         uint32
+	path       string
+	subdirname string
+	info       *os.FileInfo
+	ID         uint32
 	messages   []*FilesystemMessage
 }
 
 // FilesystemMessage is a representation of a single message in a FilesystemMailbox.
 // It points to a file
 type FilesystemMessage struct {
-  path           string
-  filename       string
-  info           *os.FileInfo
-  ID             uint32
-	flags          types.Flags
+	path     string
+	filename string
+	info     *os.FileInfo
+	ID       uint32
+	flags    types.Flags
 }
-
-
 
 // NewFilesystemMailstore performs some initialisation and should always be
 // used to create a new FilesystemMailstore
 func NewFilesystemMailstore(dirname string) *FilesystemMailstore {
 
-  err := os.Chdir(dirname)
-  if err != nil { return nil }
+	err := os.Chdir(dirname)
+	if err != nil {
+		return nil
+	}
+
+	fmt.Printf("Creating mailstore in %v\n", dirname) //BORRAR
+
+	users := make([]*FilesystemUser, 1)
+	user := &FilesystemUser{
+		username:      "username",
+		password:      "password",
+		authenticated: false,
+	}
+	users[0] = user
+	mailboxes := make([]*FilesystemMailbox, 0)
 
 	ms := &FilesystemMailstore{
-    dirname: dirname, 
-		users: make([]*FilesystemUser, 1),
-    mailboxes: make([]*FilesystemMailbox, 0),
-  }
-  fmt.Printf("Creating mailstore\n")
-  (*ms.users[0]).mailstore = ms
-  (*ms.users[0]).username = "username"
-  (*ms.users[0]).password = "password"
-  (*ms.users[0]).authenticated = false
- 
-  var mbID, emID uint32
+		dirname:   dirname,
+		users:     users,
+		mailboxes: mailboxes,
+	}
 
-  err = filepath.Walk(dirname, func (path string, info os.FileInfo, err error) error  {
-    if err != nil { return err }
-    if info.IsDir() {
-      mb := &FilesystemMailbox{
-        path: path,
-        subdirname: info.Name(),
-        info: &info,
-        ID: mbID,
-        messages: make([]*FilesystemMessage, 0),
-      }
-      ms.mailboxes = append(ms.mailboxes, mb)
-      mbID++
-      emID = 0
-    } else {
-        mb := ms.mailboxes[mbID-1]
-        ma := &FilesystemMessage{
-         path: path,
-         filename: info.Name(),
-         info: &info,
-         ID: emID,
-         flags: types.Flags(0),
-      }
-      mb.messages = append(mb.messages, ma)
-      emID++
-    }
-    return nil
-  })
-  if err != nil { return nil }
+	(*users[0]).mailstore = ms
 
+	var mbID, emID, temID uint32
+
+	err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Printf("Walking has failed: %s\n", err)
+			return err
+		}
+		if info.IsDir() {
+			mb := &FilesystemMailbox{
+				path:       path,
+				subdirname: info.Name(),
+				info:       &info,
+				ID:         mbID,
+				messages:   make([]*FilesystemMessage, 0),
+			}
+			ms.mailboxes = append(ms.mailboxes, mb)
+			mbID++
+			emID = 0
+		} else {
+			mb := ms.mailboxes[mbID-1]
+			ma := &FilesystemMessage{
+				path:     path,
+				filename: info.Name(),
+				info:     &info,
+				ID:       emID,
+				flags:    types.Flags(1),
+			}
+			mb.messages = append(mb.messages, ma)
+			emID++
+			temID++
+		}
+		return nil
+	})
+	if err != nil {
+		return nil
+	}
+	fmt.Printf("Mailboxes = %v, Emails = %v\n", mbID, temID)
 	return ms
 }
 
-
 // Authenticate implements the Authenticate method on the Mailstore interface
 func (d *FilesystemMailstore) Authenticate(username string, password string) (User, error) {
-	if username != d.users[0].username {
+	if username != (*d.users[0]).username {
 		return &FilesystemUser{}, errors.New("Invalid username. Use 'username'")
 	}
-	if password != d.users[0].password {
+	if password != (*d.users[0]).password {
 		return &FilesystemUser{}, errors.New("Invalid password. Use 'password'")
 	}
-	d.users[0].authenticated = true
-  d.users[0].mailstore = d
-	return d.users[0], nil
+	(*d.users[0]).authenticated = true
+	(*d.users[0]).mailstore = d
+	return *d.users[0], nil
 }
 
-
 // Mailboxes implements the Mailboxes method on the User interface
-func (u *FilesystemUser) Mailboxes() []Mailbox {
-  original := u.mailstore.mailboxes
+func (u FilesystemUser) Mailboxes() []Mailbox {
+	original := u.mailstore.mailboxes
 	mailboxes := make([]Mailbox, len(original))
-  for i, _ := range original {
-    mailboxes[i] = (original[i])
-  }
+	for i, _ := range original {
+		mailboxes[i] = (original[i])
+	}
 	return mailboxes
 }
 
 // MailboxByName implements the MailboxByName method on the User interface
-func (u *FilesystemUser) MailboxByName(name string) (Mailbox, error) {
+func (u FilesystemUser) MailboxByName(name string) (Mailbox, error) {
 	for _, mailbox := range u.mailstore.mailboxes {
 		if mailbox.Name() == name {
 			return mailbox, nil
@@ -139,20 +150,20 @@ func (u *FilesystemUser) MailboxByName(name string) (Mailbox, error) {
 	return nil, errors.New("Invalid mailbox")
 }
 
-
 // DebugPrintMailbox prints out all messages in the mailbox to the command line
 // for debugging purposes
 func (m *FilesystemMailbox) DebugPrintMailbox() {
-  seqset, _ := types.InterpretSequenceSet("*")
+	seqset, _ := types.InterpretSequenceSet("*")
 	debugPrintMessages(m.MessageSetByUID(seqset))
 }
 
 // Name returns the Mailbox's name
-func (m *FilesystemMailbox) Name() string { return m.subdirname }
+//func (m *FilesystemMailbox) Name() string { return m.subdirname }
+func (m *FilesystemMailbox) Name() string { return m.path }
 
 // NextUID returns the UID that is likely to be assigned to the next
 // new message in the Mailbox
-func (m *FilesystemMailbox) NextUID() uint32 { return uint32(len(m.messages)+1) }
+func (m *FilesystemMailbox) NextUID() uint32 { return uint32(len(m.messages) + 1) }
 
 // LastUID returns the UID of the last message in the mailbox or if the
 // mailbox is empty, the next expected UID
@@ -187,13 +198,17 @@ func (m *FilesystemMailbox) Unseen() uint32 {
 
 // MessageBySequenceNumber returns a single message given the message's sequence number
 func (m *FilesystemMailbox) MessageBySequenceNumber(seqno uint32) Message {
-	if seqno > uint32(len(m.messages)) { return nil }
+	if seqno > uint32(len(m.messages)) {
+		return nil
+	}
 	return m.messages[seqno-1]
 }
 
 // MessageByUID returns a single message given the message's sequence number
 func (m *FilesystemMailbox) MessageByUID(uidno uint32) Message {
-	if uidno > uint32(len(m.messages)) { return nil }
+	if uidno > uint32(len(m.messages)) {
+		return nil
+	}
 	return m.messages[uidno-1]
 }
 
@@ -341,39 +356,48 @@ func (m *FilesystemMailbox) DeleteFlaggedMessages() ([]Message, error) {
 	return delMsgs, nil
 }
 
-
 // Header returns the message's MIME Header.
 func (m *FilesystemMessage) Header() (hdr mail.Header) {
-  file, err := os.Open(m.path)
-  if err != nil { return nil }
+	file, err := os.Open(m.path)
+	if err != nil {
+		return nil
+	}
 	defer file.Close()
-  email, err := mail.ReadMessage(file)
-  if err != nil { return nil }
-  return email.Header
+	email, err := mail.ReadMessage(file)
+	if err != nil {
+		return nil
+	}
+	return email.Header
 }
 
 // Body returns the full body of the message
 func (m *FilesystemMessage) Body() string {
-  file, err := os.Open(m.path)
-  if err != nil { return "" }
-  defer file.Close()
-  email, err := mail.ReadMessage(file)
-  if err != nil { return "" }
-  body, err := ioutil.ReadAll(email.Body)
-  if err != nil { return "" }
+	file, err := os.Open(m.path)
+	if err != nil {
+		return ""
+	}
+	defer file.Close()
+	email, err := mail.ReadMessage(file)
+	if err != nil {
+		return ""
+	}
+	body, err := ioutil.ReadAll(email.Body)
+	if err != nil {
+		return ""
+	}
 	return string(body)
 }
 
 // UID returns the message's unique identifier (UID).
-func (m *FilesystemMessage) UID() uint32 { return m.ID }
+func (m *FilesystemMessage) UID() uint32 { return m.ID + 1 }
 
 // SequenceNumber returns the message's sequence number.
-func (m *FilesystemMessage) SequenceNumber() uint32 { return m.ID }
+func (m *FilesystemMessage) SequenceNumber() uint32 { return m.ID + 1 }
 
 // Size returns the message's full RFC822 size,
 // including full message header and body.
 func (m *FilesystemMessage) Size() uint32 {
-  return uint32((*m.info).Size())
+	return uint32((*m.info).Size())
 }
 
 // InternalDate returns the internally stored date of the message
