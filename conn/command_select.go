@@ -14,8 +14,8 @@ func cmdSelect(args commandArgs, c *Conn) {
 		return
 	}
 	c.SetState(StateSelected)
-	c.SetReadWrite()
+	c.SetReadOnly()
 
 	writeMailboxInfo(c, c.SelectedMailbox)
-	c.writeResponse(args.ID(), "OK [READ-WRITE] SELECT completed")
+	c.writeResponse(args.ID(), "OK [READ-ONLY] SELECT completed")
 }
