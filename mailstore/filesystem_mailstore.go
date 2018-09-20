@@ -64,9 +64,9 @@ func NewFilesystemMailstore(dirname string) *FilesystemMailstore {
 		users: make([]*FilesystemUser, 1),
     mailboxes: make([]*FilesystemMailbox, 0),
   }
-  ms.users[0].username = "username"
-  ms.users[0].password = "password"
-	ms.users[0].authenticated = false
+  (*ms.users[0]).username = "username"
+  (*ms.users[0]).password = "password"
+  (*ms.users[0]).authenticated = false
  
   var mbID, emID uint32
 
