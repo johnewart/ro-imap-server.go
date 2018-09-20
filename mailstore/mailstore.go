@@ -2,7 +2,7 @@ package mailstore
 
 import (
 	"net/mail"
-  "strings"
+	"strings"
 	"time"
 
 	"ro-imap-server.go/types"
@@ -19,7 +19,7 @@ type Mailstore interface {
 type User interface {
 	// Return a list of mailboxes belonging to this user
 	Mailboxes() []Mailbox
-  // Returns a named mailbox
+	// Returns a named mailbox
 	MailboxByName(name string) (Mailbox, error)
 }
 
@@ -115,22 +115,10 @@ type Message interface {
 	Save() (Message, error)
 }
 
-//~ func HeaderToString(m Message) string {
-  //~ i := 0
-  //~ var ss []string
-  //~ for key, value := range m.Header() {
-    //~ ss[i] = key + ": " + strings.Join(value, ", ")
-    //~ i++
-  //~ }
-  //~ return strings.Join(ss, "\r\n")
-//~ }
-
 func HeaderToString(h mail.Header) string {
-  i := 0
-  var ss []string
-  for key, value := range h {
-    ss[i] = key + ": " + strings.Join(value, ", ")
-    i++
-  }
-  return strings.Join(ss, "\r\n")
+	var ss []string
+	for key, value := range h {
+		ss = append(ss, key+": "+strings.Join(value, ", "))
+	}
+	return strings.Join(ss, "\r\n")
 }
