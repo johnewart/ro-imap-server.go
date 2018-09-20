@@ -64,6 +64,8 @@ func NewFilesystemMailstore(dirname string) *FilesystemMailstore {
 		users: make([]*FilesystemUser, 1),
     mailboxes: make([]*FilesystemMailbox, 0),
   }
+  fmt.Printf("Creating mailstore\n")
+  (*ms.users[0]).mailstore = ms
   (*ms.users[0]).username = "username"
   (*ms.users[0]).password = "password"
   (*ms.users[0]).authenticated = false
