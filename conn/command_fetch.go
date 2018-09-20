@@ -3,7 +3,7 @@ package conn
 import (
 	"errors"
 	"fmt"
-  "net/mail"
+	"net/mail"
 	"regexp"
 	"strings"
 
@@ -206,24 +206,19 @@ func fetchHeaderSpecificFields(args []string, c *Conn, m mailstore.Message, peek
 	hdrLen := len(hdr)
 
 	return fmt.Sprintf("BODY[HEADER.FIELDS (%s)] {%d}\r\n%s",
-		strings.Join(replyFieldList, " "),
-		hdrLen,
-		hdr)
-
+		strings.Join(replyFieldList, " "), hdrLen, hdr)
 }
 
 func fetchBody(args []string, c *Conn, m mailstore.Message, peekOnly bool) string {
 	body := fmt.Sprintf("%s\r\n", m.Body())
 	bodyLen := len(body)
 
-	return fmt.Sprintf("BODY[TEXT] {%d}\r\n%s",
-		bodyLen, body)
+	return fmt.Sprintf("BODY[TEXT] {%d}\r\n%s", bodyLen, body)
 }
 
 func fetchFullText(args []string, c *Conn, m mailstore.Message, peekOnly bool) string {
-	mail := fmt.Sprintf("%s\r\n%s\r\n", mailstore.HeaderToString(m.Header()), m.Body())
+	mail := fmt.Sprintf("%s\r\n\r\n%s\r\n", mailstore.HeaderToString(m.Header()), m.Body())
 	mailLen := len(mail)
 
-	return fmt.Sprintf("BODY[] {%d}\r\n%s",
-		mailLen, mail)
+	return fmt.Sprintf("BODY[] {%d}\r\n%s", mailLen, mail)
 }
