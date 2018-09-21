@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"ro-imap-server.go/mailstore"
+	"github.com/ramoncasares/ro-imap-server.go/mailstore"
 )
 
 type command struct {

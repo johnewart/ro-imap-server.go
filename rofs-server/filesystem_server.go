@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	imap "ro-imap-server.go"
-	"ro-imap-server.go/mailstore"
+	imap "github.com/ramoncasares/ro-imap-server.go"
+	"github.com/ramoncasares/ro-imap-server.go/mailstore"
 )
 
 func main() {

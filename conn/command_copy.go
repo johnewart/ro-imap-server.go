@@ -3,8 +3,8 @@ package conn
 import (
 	"strings"
 
-	"ro-imap-server.go/mailstore"
-	"ro-imap-server.go/types"
+	"github.com/ramoncasares/ro-imap-server.go/mailstore"
+	"github.com/ramoncasares/ro-imap-server.go/types"
 )
 
 const (

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"ro-imap-server.go/types"
+	"github.com/ramoncasares/ro-imap-server.go/types"
 )
 
 // FilesystemMailstore is a filesystem mail storage

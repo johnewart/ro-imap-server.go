@@ -6,8 +6,8 @@ import (
 	"net/mail"
 	"time"
 
-	"ro-imap-server.go/types"
-	"ro-imap-server.go/util"
+	"github.com/ramoncasares/ro-imap-server.go/types"
+	"github.com/ramoncasares/ro-imap-server.go/util"
 )
 
 // DummyMailstore is an in-memory mail storage for testing purposes and to

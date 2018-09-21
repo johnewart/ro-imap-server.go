@@ -3,7 +3,7 @@ package conn
 import (
 	"strconv"
 
-	"ro-imap-server.go/types"
+	"github.com/ramoncasares/ro-imap-server.go/types"
 )
 
 const (
