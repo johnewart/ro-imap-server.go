@@ -59,9 +59,9 @@ func init() {
 	registerCommand("(?i:NOOP)", cmdNoop)
 	registerCommand("(?i:CLOSE)", cmdClose)
 	registerCommand("(?i:EXPUNGE)", cmdExpunge)
-	registerCommand("(?i:SELECT) \"?([A-z0-9/]+)?\"?", cmdSelect)
-	registerCommand("(?i:EXAMINE) \"?([A-z0-9/]+)\"?", cmdExamine)
-	registerCommand("(?i:STATUS) \"?([A-z0-9/]+)\"? \\(([A-z\\s]+)\\)", cmdStatus)
+	registerCommand("(?i:SELECT) \"?([!-~]+)?\"?", cmdSelect)
+	registerCommand("(?i:EXAMINE) \"?([!-~]+)\"?", cmdExamine)
+	registerCommand("(?i:STATUS) \"?([!-~]+)\"? \\(([A-z\\s]+)\\)", cmdStatus)
 	registerCommand("((?i)UID )?(?i:FETCH) ("+sequenceSet+") \\(?([A-z0-9\\s\\(\\)\\[\\]\\.-]+)\\)?", cmdFetch)
 
 	// APPEND "INBOX" (\Seen) {310}
