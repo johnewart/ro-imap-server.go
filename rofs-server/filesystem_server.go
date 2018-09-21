@@ -9,6 +9,11 @@ import (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Printf("Error: %s requires the root of the filesystem\n", os.Args[0])
+		fmt.Printf("   Syntax: %s Root_of_Filesystem\n", os.Args[0])
+		os.Exit(1)
+  }
 	store := mailstore.NewFilesystemMailstore(os.Args[1])
 	s := imap.NewServer(store)
 	s.Transcript = os.Stdout
@@ -16,6 +21,7 @@ func main() {
 
 	err := s.ListenAndServe()
 	if err != nil {
-		fmt.Printf("Error creating test connection: %s\n", err)
+		fmt.Printf("Error creating connection: %s\n", err)
+		os.Exit(2)
 	}
 }
