@@ -29,25 +29,25 @@ emails exists. Actually don't use it anywhere.
 
 Supported Commands
 ------------------
-Command       | Planned  | Implemented  | Tests
-------------- | -------  | -----------  | -----
+Command       | Planned | Implemented | Tests
+------------- | ------- | ----------- | -----
 CAPABILITY    | ✓       | ✓           | ✓
 NOOP          | ✓       | ✗           | ✗
 LOGOUT        | ✓       | ✓           | ✓
-AUTHENTICATE  | ✓       | ✓            | ✗
+AUTHENTICATE  | ✓       | ✓           | ✗
 LOGIN         | ✓       | ✓           | ✗
 STARTTLS      | ✓       | ✗           | ✗
 EXAMINE       | ✓       | ✓           | ✗
-CREATE        | ✓       | ✗            | ✗
-DELETE        | ✓       | ✗            | ✗
-RENAME        | ✓       | ✗            | ✗
-SUBSCRIBE     | ✗       | -            | -
-UNSUBSCRIBE   | ✗       | -            | -
+CREATE        | ✓       | ✗           | ✗
+DELETE        | ✓       | ✗           | ✗
+RENAME        | ✓       | ✗           | ✗
+SUBSCRIBE     | ✗       | -           | -
+UNSUBSCRIBE   | ✗       | -           | -
 LIST          | ✓       | ✓           | ✓
 LSUB          | ✓       | ✓           | ✓
 STATUS        | ✓       | ✓           | ✓
 APPEND        | ✓       | ✓           | ✓
-CHECK         | ?        | ✗           | ✗
+CHECK         | ?       | ✗           | ✗
 CLOSE         | ✓       | ✓           | ✗
 EXPUNGE       | ✓       | ✓           | ✓
 SEARCH        | ✓       | ✗           | ✗
