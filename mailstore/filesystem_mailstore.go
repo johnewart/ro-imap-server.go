@@ -16,7 +16,6 @@ import (
 // It points to a dir in a filesystem
 type FilesystemMailstore struct {
 	dirname   string
-	info      *os.FileInfo
 	users     []*FilesystemUser
 	mailboxes []*FilesystemMailbox
 }
@@ -33,7 +32,6 @@ type FilesystemUser struct {
 // It points to a subdir of the Mailstore
 type FilesystemMailbox struct {
 	path       string
-	subdirname string
 	info       *os.FileInfo
 	ID         uint32
 	messages   []*FilesystemMessage
@@ -43,7 +41,6 @@ type FilesystemMailbox struct {
 // It points to a file
 type FilesystemMessage struct {
 	path     string
-	filename string
 	info     *os.FileInfo
 	ID       uint32
 	flags    types.Flags
@@ -58,13 +55,14 @@ func NewFilesystemMailstore(dirname string) *FilesystemMailstore {
 		return nil
 	}
 
-	fmt.Printf("Creating mailstore in %v\n", dirname) //BORRAR
+	fmt.Printf("Creating mailstore in %v\n", dirname)
 
 	users := make([]*FilesystemUser, 1)
 	user := &FilesystemUser{
 		username:      "username",
 		password:      "password",
 		authenticated: false,
+		mailstore:     nil,
 	}
 	users[0] = user
 	mailboxes := make([]*FilesystemMailbox, 0)
@@ -74,8 +72,6 @@ func NewFilesystemMailstore(dirname string) *FilesystemMailstore {
 		users:     users,
 		mailboxes: mailboxes,
 	}
-
-	(*users[0]).mailstore = ms
 
 	var mbID, emID, temID uint32
 
@@ -87,7 +83,6 @@ func NewFilesystemMailstore(dirname string) *FilesystemMailstore {
 		if info.IsDir() {
 			mb := &FilesystemMailbox{
 				path:       path,
-				subdirname: info.Name(),
 				info:       &info,
 				ID:         mbID,
 				messages:   make([]*FilesystemMessage, 0),
@@ -99,7 +94,6 @@ func NewFilesystemMailstore(dirname string) *FilesystemMailstore {
 			mb := ms.mailboxes[mbID-1]
 			ma := &FilesystemMessage{
 				path:     path,
-				filename: info.Name(),
 				info:     &info,
 				ID:       emID,
 				flags:    types.Flags(1),
@@ -418,19 +412,19 @@ func (m *FilesystemMessage) Flags() types.Flags {
 
 // OverwriteFlags replaces any flags on the message with those specified.
 func (m *FilesystemMessage) OverwriteFlags(newFlags types.Flags) Message {
-	m.flags = newFlags
+	//m.flags = newFlags
 	return m
 }
 
 // AddFlags adds the given flag to the message.
 func (m *FilesystemMessage) AddFlags(newFlags types.Flags) Message {
-	m.flags = m.flags.SetFlags(newFlags)
+	//m.flags = m.flags.SetFlags(newFlags)
 	return m
 }
 
 // RemoveFlags removes the given flag from the message.
 func (m *FilesystemMessage) RemoveFlags(newFlags types.Flags) Message {
-	m.flags = m.flags.ResetFlags(newFlags)
+	//m.flags = m.flags.ResetFlags(newFlags)
 	return m
 }
 
