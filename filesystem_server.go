@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	imap "github.com/ramoncasares/ro-imap-server.go"
+	//imap "github.com/ramoncasares/ro-imap-server.go"
 	"github.com/ramoncasares/ro-imap-server.go/mailstore"
 )
 
@@ -13,9 +13,9 @@ func main() {
 		fmt.Printf("Error: %s requires the root of the filesystem\n", os.Args[0])
 		fmt.Printf("   Syntax: %s Root_of_Filesystem\n", os.Args[0])
 		os.Exit(1)
-  }
+	}
 	store := mailstore.NewFilesystemMailstore(os.Args[1])
-	s := imap.NewServer(store)
+	s := NewServer(store)
 	s.Transcript = os.Stdout
 	s.Addr = ":10143"
 
