@@ -51,17 +51,17 @@ func init() {
 	sequenceSet := "[\\d\\:\\*\\,]+"
 
 	registerCommand("(?i:CAPABILITY)", cmdCapability)
-	registerCommand("(?i:LOGIN) \"([A-z0-9]+)\" \"([A-z0-9]+)\"", cmdLogin)
+	registerCommand("(?i:LOGIN) \"?([A-z0-9]+)\"? \"?([A-z0-9]+)\"?", cmdLogin)
 	registerCommand("(?i:AUTHENTICATE PLAIN)", cmdAuthPlain)
-	registerCommand("(?i:LIST) \"?([A-z0-9]+)?\"? \"?([A-z0-9*]+)?\"?", cmdList)
+	registerCommand("(?i:LIST) \"?([!#-~]+)?\"? \"?([!#-~]+)?\"?", cmdList)
 	registerCommand("(?i:LSUB)", cmdLSub)
 	registerCommand("(?i:LOGOUT)", cmdLogout)
 	registerCommand("(?i:NOOP)", cmdNoop)
 	registerCommand("(?i:CLOSE)", cmdClose)
 	registerCommand("(?i:EXPUNGE)", cmdExpunge)
-	registerCommand("(?i:SELECT) \"?([!-~]+)?\"?", cmdSelect)
-	registerCommand("(?i:EXAMINE) \"?([!-~]+)\"?", cmdExamine)
-	registerCommand("(?i:STATUS) \"?([!-~]+)\"? \\(([A-z\\s]+)\\)", cmdStatus)
+	registerCommand("(?i:SELECT) \"?([!#-~]+)?\"?", cmdSelect)
+	registerCommand("(?i:EXAMINE) \"?([!#-~]+)\"?", cmdExamine)
+	registerCommand("(?i:STATUS) \"?([!#-~]+)\"? \\(([A-z\\s]+)\\)", cmdStatus)
 	registerCommand("((?i)UID )?(?i:FETCH) ("+sequenceSet+") \\(?([A-z0-9\\s\\(\\)\\[\\]\\.-]+)\\)?", cmdFetch)
 
 	// APPEND "INBOX" (\Seen) {310}
